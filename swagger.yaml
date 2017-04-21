@@ -1,0 +1,2986 @@
+---
+swagger: "2.0"
+info:
+  description: "No description"
+  version: "0.0.1"
+  title: "CHPS API contract online"
+  contact: {}
+#  10.219.119.36:8181
+host: "localhost:10010"
+tags:
+- name: "AddressManager"
+- name: "Document Manager"
+- name: "ErrorManager"
+- name: "FileReceiptsManager"
+- name: "ReportManager"
+- name: "SecurityManager"
+- name: "SharedDocumentManager"
+- name: "TestFileManager"
+- name: "API_Response"
+- name: "System Values"
+  description: "API to get and maitain static/system values on the UI."
+- name: "Message Manager"
+- name: "GroupRuleManager"
+schemes:
+- "http"
+paths:
+  /error-management/errors/{errId}/status/:
+    x-swagger-router-controller: errors
+    get:
+      tags:
+      - "ErrorManager"
+      summary: "Get states of an error"
+      operationId: errGetState
+      description: "to get states of an error"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "errId"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/StandardResponse"
+  /error-management/reprocess/:
+    x-swagger-router-controller: errors
+    post:
+      summary: modify a role
+      operationId: errPostProcess
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/StandardResponse"
+  /security-manager/permissions:
+    x-swagger-router-controller: security
+    get:
+      operationId: permissions
+      tags:
+      - "SecurityManager"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "order"
+        in: "query"
+        required: false
+        type: "string"
+      - name: "offset"
+        in: "query"
+        required: false
+        type: "integer"
+        format: "int32"
+      - name: "limit"
+        in: "query"
+        required: false
+        type: "integer"
+        format: "int32"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/StandardResponse"
+  /security-manager/roles/{roleId}:
+    x-swagger-router-controller: security
+    get:
+      tags:
+      - "SecurityManager"
+      summary: "Get single role"
+      operationId: roleById
+      description: "to get single role"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "roleId"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/StandardResponse"
+    put:
+      summary: modify a role
+      operationId: putRole
+      produces:
+        - application/json
+      parameters:
+        - name: roleId
+          in: path
+          description: role id
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/StandardResponse"
+  /SharedDocument/document:
+    x-swagger-router-controller: shareDocuments
+    get:
+      tags:
+      - "SharedDocumentManager"
+      description: "shared documents list"
+      operationId: sharedDocGet
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/StandardResponse"
+  /SharedDocument/document/delete:
+    x-swagger-router-controller: shareDocuments
+    delete:
+      tags:
+      - "SharedDocumentManager"
+      description: "shared documents delete"
+      operationId: sharedDocDel
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: false
+        schema:
+          $ref: "#/definitions/SharedDocumentDeleteProperty"
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/StandardResponse"
+  /SharedDocument/document/download/{fileUID}:
+    x-swagger-router-controller: shareDocuments
+    get:
+      tags:
+      - "SharedDocumentManager"
+      description: "shared documents list"
+      operationId: sharedDocDL
+      produces:
+      - "application/json"
+      parameters:
+      - name: "fileUID"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/StandardResponse"
+  /SharedDocument/document/upload:
+    x-swagger-router-controller: shareDocuments
+    post:
+      tags:
+      - "SharedDocumentManager"
+      summary: ""
+      operationId: sharedDocUpload
+      produces:
+      - "application/json"
+      consumes:
+      - multipart/form-data
+      parameters:
+      - name: file
+        in: formData
+        description: The uploaded file data
+        required: true
+        type: file
+      - name: fileDesc
+        in: formData
+        description: The uploaded file description
+        required: true
+        type: string
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/StandardResponse"
+  /TestFile/files:
+    x-swagger-router-controller: testFiles
+    get:
+      tags:
+      - "TestFileManager"
+      summary: "Get all test files"
+      operationId: getTestFiles
+      description: " "
+      parameters: []
+      responses:
+        200:
+          description: ""
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/TestFile"
+    post:
+      tags:
+      - "TestFileManager"
+      summary: "Add a test file"
+      description: ""
+      operationId: uploadFile
+      consumes:
+      - multipart/form-data
+      parameters:
+      - name: file
+        in: formData
+        description: The uploaded file data
+        required: false
+        type: file
+      - name: email
+        in: formData
+        description: email
+        required: true
+        type: string
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/TestFile"
+  /TestFile/files/{fileKey}:
+    x-swagger-router-controller: testFiles
+    get:
+      tags:
+      - "TestFileManager"
+      summary: "Get the detail info by a file key"
+      operationId: getTestFileByKey
+      description: ""
+      parameters:
+      - name: "fileKey"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: ""
+          schema:
+            $ref: "#/definitions/TestFile"
+    put:
+      summary: "Update the access level"
+      operationId: updateAccessLevel
+      produces:
+        - application/json
+      parameters:
+      - name: "fileKey"
+        in: "path"
+        required: true
+        type: "string"
+      - in: "body"
+        name: "body"
+        required: true
+        schema:
+          type: "object"
+          properties:
+            internal:
+              type: "boolean"
+      responses:
+        200:
+          description: ""
+          schema:
+            $ref: "#/definitions/TestFile"
+  /TestFile/files/{fileKey}/resubmit:
+    x-swagger-router-controller: testFiles
+    get:
+      tags:
+      - "TestFileManager"
+      summary: "To resubmit by a file key"
+      description: ""
+      operationId: resubmit
+      parameters:
+      - name: "fileKey"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: ""
+          schema:
+            $ref: "#/definitions/TestFile"
+  /TestFile/files/{fileKey}/download/{outputId}/{partNo}:
+    x-swagger-router-controller: testFiles
+    get:
+      tags:
+      - "TestFileManager"
+      description: "Download test file output"
+      operationId: downloadFile
+      produces:
+      - "application/json"
+      parameters:
+      - name: "fileKey"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "outputId"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "partNo"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/StandardResponse"
+  /addresses:
+    x-swagger-router-controller: addresses
+    get:
+      tags:
+      - "AddressManager"
+      description: "Returns addresses"
+      operationId: get
+      produces:
+      - "application/json"
+      parameters:
+      - name: "TypeId"
+        in: "query"
+        description: "RA/DA"
+        required: false
+        type: "string"
+      - name: "id"
+        in: "query"
+        description: "addr id"
+        required: false
+        type: "number"
+        format: "double"
+      - name: "sort"
+        in: "query"
+        description: "sort"
+        required: false
+        type: "string"
+      - name: "order"
+        in: "query"
+        description: "order"
+        required: false
+        type: "string"
+      - name: "offset"
+        in: "query"
+        description: "offset"
+        required: false
+        type: "number"
+        format: "double"
+      - name: "limit"
+        in: "query"
+        description: "limit"
+        required: false
+        type: "number"
+        format: "double"
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/AddressResponse"
+    post:
+      tags:
+      - "AddressManager"
+      summary: ""
+      operationId: post
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: false
+        schema:
+          $ref: "#/definitions/AddressPostProperty"
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/StandardResponse"
+  /addresses/{addrid}:
+    x-swagger-router-controller: addresses
+    put:
+      tags:
+      - "AddressManager"
+      summary: ""
+      operationId: put
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "addrid"
+        in: "path"
+        required: true
+        type: "number"
+        format: "double"
+      - in: "body"
+        name: "body"
+        required: false
+        schema:
+          $ref: "#/definitions/AddressPutProperty"
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/StandardResponse"
+  /document/address-details/document:
+    x-swagger-router-controller: documents
+    post:
+      tags:
+      - "Document Manager"
+      summary: "Get Address Details of Document"
+      description: "Pass in a document object"
+      operationId: address
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: false
+        schema:
+          $ref: "#/definitions/Documents"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/AddressResponse"
+  /document/address-details/multilevel:
+    x-swagger-router-controller: documents
+    post:
+      tags:
+      - "Document Manager"
+      summary: "Get Address Details of file"
+      description: "Pass in a File representation object."
+      operationId: address
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: false
+        schema:
+          $ref: "#/definitions/File"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/AddressResponse"
+  /document/copy-details/pdf/{documentKey}/{copyNumber}:
+    x-swagger-router-controller: documents
+    get:
+      tags:
+      - "Document Manager"
+      summary: "Get PDF file for a doc copy"
+      operationId: copy
+      produces:
+      - "application/json"
+      parameters:
+      - name: "documentKey"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "copyNumber"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/StandardResponse"
+  /document/copy-details/{documentKey}:
+    x-swagger-router-controller: documents
+    get:
+      tags:
+      - "Document Manager"
+      summary: "Get the list of copy information"
+      operationId: copyInfo
+      produces:
+      - "application/json"
+      parameters:
+      - name: "documentKey"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/CopyInfoResponse"
+  /document/delivery-history/document:
+    x-swagger-router-controller: documents
+    post:
+      tags:
+      - "Document Manager"
+      summary: "Get Delivery History of Document"
+      description: "Pass in a document object"
+      operationId: deliveryHistory
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: false
+        schema:
+          $ref: "#/definitions/Documents"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/DeliveryInfoResponse"
+  /document/delivery-history/multilevel:
+    x-swagger-router-controller: documents
+    post:
+      tags:
+      - "Document Manager"
+      summary: "Get Delivery History of File or Group"
+      description: "Pass in a document object"
+      operationId: deliveryHistory
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: false
+        schema:
+          $ref: "#/definitions/File"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/DeliveryInfoResponse"
+  /document/file-keys/{action}/{level}:
+    x-swagger-router-controller: documents
+    get:
+      tags:
+      - "Document Manager"
+      summary: "Get all File keys for an action and type filter."
+      description: "Actions can be - Hold, Release, Route, Purge and override(just\
+        \ for override)\nType can be - Document, Group, File and (for override)"
+      operationId: getFileKeys
+      produces:
+      - "application/json"
+      parameters:
+      - name: "action"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "level"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Array of file keys inside data."
+          schema:
+            $ref: "#/definitions/StandardResponse"
+        400:
+          description: "Status 400"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /document/history/document:
+    x-swagger-router-controller: documents
+    post:
+      tags:
+      - "Document Manager"
+      summary: "Get document History"
+      operationId: documentSearch
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: false
+        schema:
+          $ref: "#/definitions/History Search"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/DocumentResponse"
+  /document/history/multilevel:
+    x-swagger-router-controller: documents
+    post:
+      tags:
+      - "Document Manager"
+      summary: "Get history for file or group"
+      operationId: multiSearch
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: false
+        schema:
+          $ref: "#/definitions/History Search"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/FileResponse"
+  /document/hold/document:
+    x-swagger-router-controller: documents
+    post:
+      tags:
+      - "Document Manager"
+      summary: "hold documents"
+      operationId: documentAction
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: false
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/Documents"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/TransactionResponse"
+  /document/hold/multilevel:
+    x-swagger-router-controller: documents
+    post:
+      tags:
+      - "Document Manager"
+      summary: "hold files"
+      description: "file/multilevel representations."
+      operationId: documentAction
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: false
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/File"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/TransactionResponse"
+  /document/override/:
+    x-swagger-router-controller: documents
+    post:
+      tags:
+      - "Document Manager"
+      summary: "override"
+      description: "List of File Keys."
+      operationId: fileOverride
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: false
+        schema:
+          type: "array"
+          items:
+            type: "string"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/StandardResponse"
+        400:
+          description: "Status 400"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /document/process-details/{documentKey}:
+    x-swagger-router-controller: documents
+    get:
+      tags:
+      - "Document Manager"
+      summary: "Get the internal processing information for a document"
+      operationId: processInfo
+      produces:
+      - "application/json"
+      parameters:
+      - name: "documentKey"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/TrackingDetailsResponse"
+  /document/purge/document:
+    x-swagger-router-controller: documents
+    post:
+      tags:
+      - "Document Manager"
+      summary: "purge documents"
+      description: "list of documentIds"
+      operationId: documentAction
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: false
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/Documents"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/TransactionResponse"
+  /document/purge/multilevel:
+    x-swagger-router-controller: documents
+    post:
+      tags:
+      - "Document Manager"
+      summary: "purge file or group"
+      description: "file/multilevel representations."
+      operationId: documentAction
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: false
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/File"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/TransactionResponse"
+  /document/release/document:
+    x-swagger-router-controller: documents
+    post:
+      tags:
+      - "Document Manager"
+      summary: "release documents"
+      operationId: documentAction
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: false
+        schema:
+          $ref: "#/definitions/ReleaseDocumentPost"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/TransactionResponse"
+  /document/release/multilevel:
+    x-swagger-router-controller: documents
+    post:
+      tags:
+      - "Document Manager"
+      summary: "release files"
+      operationId: documentAction
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: false
+        schema:
+          $ref: "#/definitions/ReleaseFilePost"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/TransactionResponse"
+  /document/route/document:
+    x-swagger-router-controller: documents
+    post:
+      tags:
+      - "Document Manager"
+      summary: "route documents"
+      operationId: documentAction
+      description: ""
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: false
+        schema:
+          $ref: "#/definitions/RouteDocumentPost"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/TransactionResponse"
+  /document/route/multilevel:
+    x-swagger-router-controller: documents
+    post:
+      tags:
+      - "Document Manager"
+      summary: "route documents"
+      operationId: documentAction
+      description: ""
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: false
+        schema:
+          $ref: "#/definitions/RouteFilePost"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/TransactionResponse"
+  /document/search/document:
+    x-swagger-router-controller: documents
+    post:
+      tags:
+      - "Document Manager"
+      summary: "Search for document"
+      operationId: documentSearch
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: false
+        schema:
+          $ref: "#/definitions/Search"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/DocumentResponse"
+  /document/search/multilevel:
+    x-swagger-router-controller: documents
+    post:
+      tags:
+      - "Document Manager"
+      summary: "Search for file or group"
+      operationId: multiSearch
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: false
+        schema:
+          $ref: "#/definitions/Search"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/FileResponse"
+  /document/tracking-details/{documentKey}/{copyNumber}:
+    x-swagger-router-controller: documents
+    get:
+      tags:
+      - "Document Manager"
+      summary: "Get the list of live tracking info"
+      operationId: trackingInfo
+      produces:
+      - "application/json"
+      parameters:
+      - name: "documentKey"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "copyNumber"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/TrackingDetailsResponse"
+  /document/transaction-details/document:
+    x-swagger-router-controller: documents
+    post:
+      tags:
+      - "Document Manager"
+      summary: "Get previous hold transaction history of a document"
+      operationId: txnHistory
+      description: "Pass in Document Object"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: false
+        schema:
+          $ref: "#/definitions/Documents"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/Transaction History"
+  /document/transaction-details/multilevel:
+    x-swagger-router-controller: documents
+    post:
+      tags:
+      - "Document Manager"
+      summary: "Get previous hold transaction history of a file or group"
+      description: "Pass in  File Object"
+      operationId: txnHistory
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: false
+        schema:
+          $ref: "#/definitions/File"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/Transaction History"
+  /error-management/errors:
+    x-swagger-router-controller: errors
+    get:
+      operationId: errGet
+      tags:
+      - "ErrorManager"
+      summary: "Get all errors"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "order"
+        in: "query"
+        required: false
+        type: "string"
+      - name: "offset"
+        in: "query"
+        required: false
+        type: "integer"
+        format: "int32"
+      - name: "limit"
+        in: "query"
+        required: false
+        type: "integer"
+        format: "int32"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/ErrorsResponse"
+  /error-management/errors/{errId}:
+    x-swagger-router-controller: errors
+    get:
+      operationId: errGetById
+      tags:
+      - "ErrorManager"
+      summary: "Get error by id"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "errId"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/ErrorsDetailResponse"
+    put:
+      operationId: errPutById
+      tags:
+      - "ErrorManager"
+      summary: "Put error status by id"
+      consumes:
+      - "application/json"
+      parameters:
+      - name: "errId"
+        in: "path"
+        required: true
+        type: "string"
+      - in: "body"
+        name: "body"
+        required: false
+        schema:
+          $ref: "#/definitions/ErrorsDetailPut"
+      responses:
+        200:
+          description: "Status 200"
+  /error-management/errors/{errId}/info:
+    x-swagger-router-controller: errors
+    get:
+      operationId: errGetDetailListById
+      tags:
+      - "ErrorManager"
+      summary: "Get error info by id"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "errId"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "order"
+        in: "query"
+        required: false
+        type: "string"
+      - name: "offset"
+        in: "query"
+        required: false
+        type: "integer"
+        format: "int32"
+      - name: "limit"
+        in: "query"
+        required: false
+        type: "integer"
+        format: "int32"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/ErrorsDetailInfoListResponse"
+  /file-receipt-tracking/FileReceipts:
+    x-swagger-router-controller: fileReceipts
+    get:
+      tags:
+      - "FileReceiptsManager"
+      description: "Returns file receipts data to the caller"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "sort"
+        in: "query"
+        description: "sort"
+        required: false
+        type: "string"
+      - name: "order"
+        in: "query"
+        description: "order"
+        required: false
+        type: "string"
+      - name: "offset"
+        in: "query"
+        description: "offset"
+        required: false
+        type: "number"
+        format: "double"
+      - name: "limit"
+        in: "query"
+        description: "limit"
+        required: false
+        type: "number"
+        format: "double"
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/StandardResponse"
+  /file-receipt-tracking/FileReceipts/{key}:
+    x-swagger-router-controller: fileReceipts
+    get:
+      tags:
+      - "FileReceiptsManager"
+      description: "Returns file receipts data to the caller"
+      operationId: key
+      produces:
+      - "application/json"
+      parameters:
+      - name: "key"
+        in: "path"
+        description: "file key"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/StandardResponse"
+  /file-receipt-tracking/FileReceipts/{key}/download/abf-formatted:
+    x-swagger-router-controller: fileReceipts
+    get:
+      tags:
+      - "FileReceiptsManager"
+      description: "Returns file receipts data to the caller"
+      operationId: abf
+      produces:
+      - "application/json"
+      parameters:
+      - name: "key"
+        in: "path"
+        description: "file key"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/StandardResponse"
+  /file-receipt-tracking/FileReceipts/{key}/download/check-register:
+    x-swagger-router-controller: fileReceipts
+    get:
+      tags:
+      - "FileReceiptsManager"
+      description: "Returns file receipts data to the caller"
+      operationId: check
+      produces:
+      - "application/json"
+      parameters:
+      - name: "key"
+        in: "path"
+        description: "file key"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/StandardResponse"
+  /file-receipt-tracking/FileReceipts/{key}/resend:
+    x-swagger-router-controller: fileReceipts
+    get:
+      tags:
+      - "FileReceiptsManager"
+      description: "Returns file receipts data to the caller"
+      operationId: resend
+      produces:
+      - "application/json"
+      parameters:
+      - name: "key"
+        in: "path"
+        description: "file key"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/StandardResponse"
+  /file-receipt-tracking/FileReceipts/{key}/download/original:
+    x-swagger-router-controller: fileReceipts
+    get:
+      tags:
+      - "FileReceiptsManager"
+      description: "Returns file receipts data to the caller"
+      operationId: original
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/StandardResponse"
+    parameters:
+    - name: "key"
+      in: "path"
+      required: true
+      type: "string"
+      description: "file key"
+  /group-rule/rules:
+    x-swagger-router-controller: groupRules
+    get:
+      tags:
+      - "GroupRuleManager"
+      operationId: getRules
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/StandardResponse"
+    post:
+      tags:
+      - "GroupRuleManager"
+      operationId: addRule
+      produces:
+      - "application/json"
+      parameters:
+      - name: "body"
+        in: "body"
+        required: true
+        schema:
+          type: "object"
+          properties:
+            ruleDesc:
+              type: "string"
+            ruleTypeID:
+              type: "string"
+            clientID:
+              type: "number"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/StandardResponse"
+  /group-rule/rules/{ruleID}:
+    x-swagger-router-controller: groupRules
+    get:
+      tags:
+      - "GroupRuleManager"
+      operationId: getRule
+      produces:
+      - "application/json"
+      parameters:
+      - name: "ruleID"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/StandardResponse"
+    post:
+      tags:
+      - "GroupRuleManager"
+      operationId: createTestRule
+      produces:
+      - "application/json"
+      parameters:
+      - name: "ruleID"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/StandardResponse"
+    put:
+      tags:
+      - "GroupRuleManager"
+      operationId: editRule
+      produces:
+      - "application/json"
+      parameters:
+      - name: "ruleID"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "body"
+        in: "body"
+        required: true
+        schema:
+          type: "object"
+          properties:
+            isActive:
+              type: "string"
+            ruleStatus:
+              type: "string"
+            ruleDesc:
+              type: "string"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/StandardResponse"
+  /group-rule/rules/{ruleID}/details:
+    x-swagger-router-controller: groupRules
+    post:
+      tags:
+      - "GroupRuleManager"
+      operationId: addRuleDetails
+      produces:
+      - "application/json"
+      parameters:
+      - name: "ruleID"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "body"
+        in: "body"
+        required: true
+        schema:
+          type: "object"
+          properties:
+            claimType:
+              type: "string"
+            recipientType:
+              type: "string"
+            documentType:
+              type: "string"
+            copyNumber:
+              type: "string"
+            taxIdSSN:
+              type: "string"
+            ssn:
+              type: "string"
+            insuredEligibility:
+              type: "string"
+            copyFlag:
+              type: "string"
+            abfFormID:
+              type: "string"
+            recipientStatus:
+              type: "string"
+            ppoCount:
+              type: "string"
+            messageCode:
+              type: "string"
+            hppID:
+              type: "string"
+            checkAmount:
+              type: "string"
+            insertCode:
+              type: "string"
+            state:
+              type: "string"
+            customRoute:
+              type: "string"
+            plcntnType:
+              type: "string"
+            languageCode:
+              type: "string"
+            jsonPayload:
+              type: "string"
+            createdByID:
+              type: "string"
+            createdDate:
+              type: "number"
+            modifiedByID:
+              type: "string"
+            modifiedDate:
+              type: "number"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/StandardResponse"
+    put:
+      tags:
+      - "GroupRuleManager"
+      operationId: modifyDetailRecord
+      produces:
+      - "application/json"
+      parameters:
+      - name: "ruleID"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "body"
+        in: "body"
+        required: true
+        schema:
+          type: "array"
+          items:
+            type: "object"
+            properties:
+              detailIDs:
+                type: "string"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/StandardResponse"
+    delete:
+      tags:
+      - "GroupRuleManager"
+      operationId: deleteDetailRecord
+      produces:
+      - "application/json"
+      parameters:
+      - name: "ruleID"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "body"
+        in: "body"
+        required: true
+        schema:
+          type: "object"
+          properties:
+            detailIDs:
+              type: "array"
+              items:
+                type: "string"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/StandardResponse"
+  /group-rule/rules/{ruleID}/{status}/details:
+    x-swagger-router-controller: groupRules
+    get:
+      tags:
+      - "GroupRuleManager"
+      operationId: getDetailRecords
+      produces:
+      - "application/json"
+      parameters:
+      - name: "ruleID"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "status"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/StandardResponse"
+  /group-rule/rules/ruleType/{type}:
+    x-swagger-router-controller: groupRules
+    get:
+      tags:
+      - "GroupRuleManager"
+      operationId: getRulesByType
+      produces:
+      - "application/json"
+      parameters:
+      - name: "type"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/StandardResponse"
+  /group-rule/rules/clone/{ruleID}/{status}:
+    x-swagger-router-controller: groupRules
+    post:
+      tags:
+      - "GroupRuleManager"
+      operationId: copyRule
+      produces:
+      - "application/json"
+      parameters:
+      - name: "ruleID"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "status"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/StandardResponse"
+  /group-rule/rules/commit/{ruleID}:
+    x-swagger-router-controller: groupRules
+    post:
+      tags:
+      - "GroupRuleManager"
+      operationId: commitRule
+      produces:
+      - "application/json"
+      parameters:
+      - name: "ruleID"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "body"
+        in: "body"
+        required: true
+        schema:
+          type: "object"
+          properties:
+            ruleVersion:
+              type: "string"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/StandardResponse"
+  /group-rule/rules/commit/multi:
+    x-swagger-router-controller: groupRules
+    post:
+      tags:
+      - "GroupRuleManager"
+      operationId: commitRules
+      produces:
+      - "application/json"
+      parameters:
+      - name: "body"
+        in: "body"
+        required: true
+        schema:
+          type: "object"
+          properties:
+            fields:
+              type: "array"
+              items:
+                type: "object"
+                properties:
+                  ruleID:
+                    type: "string"
+                  ruleVersion:
+                    type: "string"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/StandardResponse"
+  /group-rule/group/clientId/{clientID}:
+    x-swagger-router-controller: groupRules
+    get:
+      tags:
+      - "GroupRuleManager"
+      operationId: getGroups
+      produces:
+      - "application/json"
+      parameters:
+      - name: "clientID"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/StandardResponse"
+  /reporting/client-image-report:
+    x-swagger-router-controller: report
+    get:
+      operationId: clientImageReport
+      tags:
+      - "ReportManager"
+      produces:
+      - "application/pdf"
+      parameters:
+      - name: "env"
+        in: "query"
+        description: "test/production"
+        required: true
+        type: "string"
+      - name: "clientId"
+        in: "query"
+        description: "0002"
+        required: true
+        type: "string"
+      - name: "layoutId"
+        in: "query"
+        description: "028"
+        required: false
+        type: "string"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/StandardResponse"
+  /reporting/client-information-report:
+    x-swagger-router-controller: report
+    get:
+      tags:
+      - "ReportManager"
+      summary: "Get client information report"
+      operationId: clientInfoReport
+      parameters:
+      - name: "context"
+        in: "query"
+        required: true
+        type: "string"
+      - name: "layoutId"
+        in: "query"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/StandardResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /reporting/on-hold-report:
+    x-swagger-router-controller: report
+    post:
+      tags:
+      - "ReportManager"
+      summary: ""
+      operationId: onHoldReport
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: false
+        schema:
+          $ref: "#/definitions/OnHoldReportPost"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/StandardResponse"
+  /reporting/user-report:
+    x-swagger-router-controller: report
+    get:
+      tags:
+      - "ReportManager"
+      summary: "Get the user report"
+      operationId: userReport
+      produces:
+      - "application/json"
+      parameters:
+      - name: "type"
+        in: "query"
+        description: "screen / excel"
+        required: true
+        type: "string"
+        x-example: ""
+      - name: "context"
+        in: "query"
+        description: "context id"
+        required: true
+        type: "string"
+      - name: "sort"
+        in: "query"
+        description: "id / name / context / status / login"
+        required: true
+        type: "string"
+      - name: "order"
+        in: "query"
+        description: "asc / desc"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/StandardResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /security-manager/dataSources:
+    x-swagger-router-controller: security
+    get:
+      tags:
+      - "SecurityManager"
+      summary: "Get all data sources"
+      operationId: dataSources
+      description: "to get all data sources"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/dataSource"
+  /security-manager/roles:
+    x-swagger-router-controller: security
+    get:
+      tags:
+      - "SecurityManager"
+      summary: "Get all roles"
+      operationId: roles
+      description: "to get all roles"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/role"
+    post:
+      summary: add a role
+      operationId: addRole
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: "object"
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/StandardResponse"
+    delete:
+      tags:
+      - "RoleManager"
+      operationId: delRole
+      produces:
+      - "application/json"
+      parameters:
+      - name: "body"
+        in: "body"
+        required: true
+        schema:
+          type: "object"
+          properties:
+            roleIds:
+              type: "array"
+              items:
+                type: "string"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/StandardResponse"
+  /security-manager/users:
+    x-swagger-router-controller: security
+    get:
+      tags:
+      - "SecurityManager"
+      summary: "Get all users"
+      operationId: users
+      description: "to get all users"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "sort"
+        in: "query"
+        required: false
+        type: "string"
+      - name: "order"
+        in: "query"
+        required: false
+        type: "string"
+      - name: "offset"
+        in: "query"
+        required: false
+        type: "string"
+      - name: "limit"
+        in: "query"
+        required: false
+        type: "string"
+      - name: "online"
+        in: "query"
+        required: false
+        type: "string"
+        x-example: "online=true"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/StandardResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    post:
+      summary: add a user
+      operationId: addUser
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          required: false
+          schema:
+            "$ref": "#/definitions/UserProperty"
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/StandardResponse"
+  /security-manager/users/{uid}:
+    x-swagger-router-controller: security
+    get:
+      description: to get a specific user data
+      operationId: user
+      parameters:
+        - name: uid
+          in: path
+          description: user id
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/StandardResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    put:
+      summary: modify a user
+      operationId: modifyUser
+      produces:
+        - application/json
+      parameters:
+        - name: uid
+          in: path
+          description: user id
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: false
+          schema:
+            "$ref": "#/definitions/UserProperty"
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/StandardResponse"
+  /security-manager/users/{uid}/resetPwd:
+    x-swagger-router-controller: security
+    get:
+      description: to reset the user password
+      operationId: resetPwd
+      parameters:
+        - name: uid
+          in: path
+          description: user id
+          required: true
+          type: string
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/StandardResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /security-manager/users/{uid}/terminate:
+    x-swagger-router-controller: security
+    get:
+      tags:
+      - "SecurityManager"
+      summary: "Terminate the user session"
+      operationId: termUser
+      parameters:
+      - name: "uid"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Status 200"
+  /client-values-retrieval/client/all/{clientLayout}:
+    x-swagger-router-controller: system
+    get:
+      tags:
+      - "System Values"
+      summary: "Get All Static Data Values"
+      operationId: get
+      produces:
+      - "application/json"
+      parameters:
+      - name: "clientLayout"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/SystemValuesResponse"
+  /message/login-messages/{clientLayout}/{userType}:
+    x-swagger-router-controller: messages
+    get:
+      tags:
+      - "Message Manager"
+      summary: "Get all list of messages"
+      operationId: get
+      produces:
+      - "application/json"
+      parameters:
+      - name: "clientLayout"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "userType"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Status 200"
+          schema:
+            $ref: "#/definitions/MessageResponse"
+  /swagger:
+    x-swagger-pipe: swagger_raw
+# complex objects have schema definitions
+definitions:
+  AddressPostProperty:
+    type: "object"
+    properties:
+      Desc:
+        type: "string"
+      City:
+        type: "string"
+      State:
+        type: "string"
+      Zip:
+        type: "string"
+  AddressPutProperty:
+    type: "object"
+    properties:
+      Desc:
+        type: "string"
+      City:
+        type: "string"
+      State:
+        type: "string"
+      Zip:
+        type: "string"
+  Documents:
+    type: "object"
+    required:
+    - "documentKey"
+    - "status"
+    properties:
+      documentKey:
+        type: "string"
+      claimNumber:
+        type: "array"
+        items:
+          type: "string"
+      checkNumber:
+        type: "string"
+      checkAmount:
+        type: "string"
+      status:
+        type: "string"
+      documentType:
+        type: "string"
+      recipientType:
+        type: "string"
+      claimType:
+        type: "string"
+      transactionId:
+        type: "string"
+        description: "If it was managed, it is a required field."
+      transactionUser:
+        type: "string"
+        description: "If it was managed, it is a required field."
+      transactionDate:
+        type: "string"
+        description: "If it was managed, it is a required field."
+      copyNumber:
+        type: "array"
+        items:
+          type: "string"
+      paymentIdentifier:
+        type: "string"
+      trackingId:
+        type: "string"
+        description: "Would this be included in the response and if so, what would\
+          \ it be for?  USPS, etc?"
+      importDate:
+        type: "string"
+  Search:
+    type: "object"
+    required:
+    - "action"
+    - "level"
+    properties:
+      action:
+        type: "string"
+        description: "hold, release, purge, route, any (for document search screen)"
+      level:
+        type: "string"
+        description: "document, file, group"
+      claimNumber:
+        type: "string"
+      checkNumber:
+        type: "string"
+      ssn:
+        type: "string"
+      employerGroups:
+        type: "array"
+        items:
+          type: "string"
+      fileKeys:
+        type: "array"
+        items:
+          type: "string"
+      claimType:
+        type: "array"
+        items:
+          type: "string"
+      recipientType:
+        type: "array"
+        items:
+          type: "string"
+      documentType:
+        type: "array"
+        items:
+          type: "string"
+  File:
+    type: "object"
+    required:
+    - "fileKey"
+    properties:
+      fileKey:
+        type: "string"
+      importDate:
+        type: "string"
+      origName:
+        type: "string"
+      documentType:
+        type: "string"
+      claimType:
+        type: "string"
+      recipientType:
+        type: "string"
+      group:
+        $ref: "#/definitions/Group"
+      status:
+        type: "string"
+      transactionId:
+        type: "string"
+        description: "If it was managed, it is a required field. Transaction ID can\
+          \ be \"0000234567\". So we have to save it as string"
+      transactionUser:
+        type: "string"
+        description: "If it was managed, it is a required field."
+      transactionDate:
+        type: "string"
+        description: "If it was managed, it is a required field."
+  Group:
+    type: "object"
+    required:
+    - "groupId"
+    - "groupName"
+    properties:
+      groupId:
+        type: "string"
+      groupName:
+        type: "string"
+  DocumentResponse:
+    type: "object"
+    required:
+    - "data"
+    - "messages"
+    - "status"
+    - "statusCode"
+    properties:
+      status:
+        type: "string"
+      statusCode:
+        type: "number"
+        format: "double"
+      messages:
+        type: "array"
+        items:
+          type: "string"
+      data:
+        type: "array"
+        items:
+          $ref: "#/definitions/Documents"
+  FileResponse:
+    type: "object"
+    required:
+    - "data"
+    - "messages"
+    - "status"
+    - "statusCode"
+    properties:
+      status:
+        type: "string"
+      statusCode:
+        type: "number"
+        format: "double"
+      messages:
+        type: "array"
+        items:
+          type: "string"
+      data:
+        type: "array"
+        items:
+          $ref: "#/definitions/File"
+  DeliveryInfo:
+    type: "object"
+    required:
+    - "deliveryAddressId"
+    - "deliveryType"
+    - "releaseItemsOnHold"
+    properties:
+      deliveryAddressId:
+        type: "string"
+        description: "If original address, discriminator will be: \"original\"\nIf\
+          \ one time address, discriminator will be: \"one-time\""
+      deliveryType:
+        type: "string"
+      releaseItemsOnHold:
+        type: "string"
+        description: "0 - Do not release\n1 - First Available\n2 - Scheduled Release"
+      deliveryAddress:
+        $ref: "#/definitions/Address"
+  ReleaseDocumentPost:
+    type: "object"
+    required:
+    - "releaseType"
+    - "transactionDetails"
+    properties:
+      transactionDetails:
+        type: "array"
+        description: "list of documents to release"
+        items:
+          $ref: "#/definitions/Documents"
+      releaseType:
+        type: "string"
+  RouteFilePost:
+    type: "object"
+    required:
+    - "deliveryInfo"
+    - "transactionDetails"
+    properties:
+      transactionDetails:
+        type: "array"
+        description: "list of fileKeys to release"
+        items:
+          $ref: "#/definitions/File"
+      deliveryInfo:
+        $ref: "#/definitions/DeliveryInfo"
+  ReleaseFilePost:
+    type: "object"
+    required:
+    - "level"
+    - "releaseType"
+    - "transactionDetails"
+    properties:
+      transactionDetails:
+        type: "array"
+        description: "list of fileKeys to release"
+        items:
+          $ref: "#/definitions/File"
+      releaseType:
+        type: "string"
+      level:
+        type: "string"
+        description: "group or file"
+  RouteDocumentPost:
+    type: "object"
+    required:
+    - "deliveryInfo"
+    - "transactionDetails"
+    properties:
+      transactionDetails:
+        type: "array"
+        description: "list of documentIds to release"
+        items:
+          $ref: "#/definitions/Documents"
+      deliveryInfo:
+        $ref: "#/definitions/DeliveryInfo"
+  History Search:
+    type: "object"
+    required:
+    - "action"
+    - "level"
+    properties:
+      action:
+        type: "string"
+        description: "Release, purge, route, hold"
+      level:
+        type: "string"
+        description: "Document, Group, File, Auto"
+      startDate:
+        type: "string"
+      endDate:
+        type: "string"
+      fileOrDocKey:
+        type: "string"
+        description: "This will send either a filekey or doc key and the history will\
+          \ have to search based on the level selected."
+      collapseClaims:
+        type: "boolean"
+        default: false
+    description: "Search paramaters for history query."
+  TransactionDetails:
+    type: "object"
+    properties:
+      transactionId:
+        type: "string"
+  TransactionResponse:
+    type: "object"
+    required:
+    - "data"
+    - "messages"
+    - "status"
+    - "statusCode"
+    properties:
+      status:
+        type: "string"
+      statusCode:
+        type: "number"
+        format: "double"
+      messages:
+        type: "array"
+        items:
+          type: "string"
+      data:
+        type: "array"
+        description: "Will only be one."
+        items:
+          $ref: "#/definitions/TransactionDetails"
+  Transaction History:
+    type: "object"
+    required:
+    - "lastHoldDate"
+    - "lastHoldId"
+    - "lastHoldUser"
+    properties:
+      lastHoldId:
+        type: "integer"
+        format: "int32"
+        description: "Last hold transaction ID."
+      lastHoldUser:
+        type: "string"
+        description: "User name"
+      lastHoldDate:
+        type: "string"
+        description: "Date time"
+    description: "Response containing previous hold transaction information"
+  DeliveryInfoHistory:
+    type: "object"
+    properties:
+      current:
+        $ref: "#/definitions/Address"
+      previous:
+        type: "array"
+        items:
+          $ref: "#/definitions/Address"
+  DeliveryInfoResponse:
+    type: "object"
+    required:
+    - "data"
+    - "messages"
+    - "status"
+    - "statusCode"
+    properties:
+      status:
+        type: "string"
+      statusCode:
+        type: "number"
+        format: "double"
+      messages:
+        type: "array"
+        items:
+          type: "string"
+      data:
+        type: "array"
+        items:
+          $ref: "#/definitions/DeliveryInfoHistory"
+  Address:
+    type: "object"
+    required:
+    - "addressName"
+    properties:
+      addressId:
+        type: "integer"
+        format: "int32"
+      addressName:
+        type: "string"
+      address1:
+        type: "string"
+      address2:
+        type: "string"
+      zipCode:
+        type: "string"
+      state:
+        type: "string"
+      city:
+        type: "string"
+      attention:
+        type: "string"
+      deliveryType:
+        type: "string"
+      sortOrder:
+        type: "string"
+      typeId:
+        type: "string"
+        description: "Determines if it is a delivery address or return address."
+      addressDesc:
+        type: "string"
+      modifiedDate:
+        type: "string"
+      addressStatus:
+        type: "string"
+  AddressResponse:
+    type: "object"
+    required:
+    - "data"
+    - "messages"
+    - "status"
+    - "statusCode"
+    properties:
+      status:
+        type: "string"
+      statusCode:
+        type: "number"
+        format: "double"
+      messages:
+        type: "array"
+        items:
+          type: "string"
+      data:
+        type: "array"
+        description: "Will only be one."
+        items:
+          $ref: "#/definitions/Address"
+  CopyInformation:
+    type: "object"
+    required:
+    - "copyNumber"
+    properties:
+      copyNumber:
+        type: "string"
+      details:
+        type: "array"
+        items:
+          $ref: "#/definitions/CopyInformationDetails"
+  CopyInformationDetails:
+    type: "object"
+    properties:
+      stock:
+        type: "string"
+      jobId:
+        type: "integer"
+        format: "int32"
+      envelope:
+        type: "integer"
+        format: "int32"
+      page:
+        type: "integer"
+        format: "int32"
+      facility:
+        type: "string"
+      mailDate:
+        type: "string"
+      deliveryType:
+        type: "string"
+      eEOBMail:
+        type: "string"
+  CopyInfoResponse:
+    type: "object"
+    required:
+    - "data"
+    - "messages"
+    - "status"
+    - "statusCode"
+    properties:
+      status:
+        type: "string"
+      statusCode:
+        type: "number"
+        format: "double"
+      messages:
+        type: "array"
+        items:
+          type: "string"
+      data:
+        type: "array"
+        items:
+          $ref: "#/definitions/CopyInformation"
+  TrackingDetails:
+    type: "object"
+    properties:
+      type:
+        type: "string"
+        description: "Could be data processing / doc management"
+      facility:
+        type: "string"
+      id:
+        type: "string"
+      description:
+        type: "string"
+      date:
+        type: "string"
+  TrackingDetailsResponse:
+    type: "object"
+    required:
+    - "data"
+    - "messages"
+    - "status"
+    - "statusCode"
+    properties:
+      status:
+        type: "string"
+      statusCode:
+        type: "number"
+        format: "double"
+      messages:
+        type: "array"
+        items:
+          type: "string"
+      data:
+        type: "array"
+        items:
+          $ref: "#/definitions/TrackingDetails"
+  ErrorsResponse:
+    type: "object"
+    required:
+    - "errCount"
+    - "errId"
+    - "errStatus"
+    - "errType"
+    - "severity"
+    - "sysType"
+    properties:
+      errId:
+        type: "integer"
+        format: "int32"
+      errType:
+        type: "string"
+      sysType:
+        type: "string"
+        description: "test/live"
+      errStatus:
+        type: "string"
+        description: "new/inWork/unresolved/resolved."
+      severity:
+        type: "string"
+        description: "(null)/investigate/critical/severe"
+      errCount:
+        type: "integer"
+        format: "int32"
+  ErrorsDetailResponse:
+    type: "object"
+    required:
+    - "data"
+    properties:
+      data:
+        type: "array"
+        items:
+          type: "object"
+          properties:
+            errInfo:
+              type: "object"
+              properties:
+                errId:
+                  type: "integer"
+                  format: "int32"
+                errType:
+                  type: "string"
+                sysType:
+                  type: "string"
+                  description: "test/live"
+                errStatus:
+                  type: "string"
+                  description: "new/inWork/unresolved/resolved"
+                severity:
+                  type: "string"
+                  description: "(null)/investigate/severe/critical"
+                errDesc:
+                  type: "string"
+              required:
+              - "errDesc"
+              - "errId"
+              - "errStatus"
+              - "errType"
+              - "severity"
+              - "sysType"
+          required:
+          - "errInfo"
+  ErrorsDetailPut:
+    type: "object"
+    required:
+    - "errStatus"
+    properties:
+      errStatus:
+        type: "string"
+        description: "new/inWork/unresolved/resolved"
+  ErrorsDetailInfoDetailResponse:
+    type: "object"
+    required:
+    - "data"
+    properties:
+      data:
+        type: "object"
+        properties:
+          errCode:
+            type: "integer"
+            format: "int32"
+          errDesc:
+            type: "string"
+          resolution:
+            type: "string"
+          errInfo:
+            type: "string"
+        required:
+        - "errCode"
+        - "errDesc"
+        - "errInfo"
+        - "resolution"
+  ErrorsDetailInfoListResponse:
+    type: "object"
+    required:
+    - "data"
+    properties:
+      total:
+        type: "integer"
+        format: "int32"
+      offset:
+        type: "integer"
+        format: "int32"
+      limit:
+        type: "integer"
+        format: "int32"
+      data:
+        type: "array"
+        items:
+          type: "object"
+          properties:
+            errKey:
+              type: "string"
+              description: "400002820160331M1000002"
+            errInfo:
+              type: "string"
+            errResolution:
+              type: "string"
+            errDetailInfo:
+              type: "string"
+            recvDate:
+              type: "string"
+              format: "date"
+              description: "1/12/2017 12:50:26 AM"
+          required:
+          - "errDetailInfo"
+          - "errInfo"
+          - "errKey"
+          - "errResolution"
+          - "recvDate"
+  OnHoldReportPost:
+    type: "object"
+    properties:
+      sendTo:
+        type: "string"
+      days:
+        type: "string"
+  user:
+    type: "object"
+    required:
+    - "email"
+    - "id"
+    - "lastActivity"
+    - "lastLogon"
+    - "name"
+    - "pwdExp"
+    - "roleId"
+    - "status"
+    properties:
+      id:
+        type: "string"
+      name:
+        type: "string"
+      lastLogon:
+        type: "integer"
+        format: "int32"
+      lastActivity:
+        type: "integer"
+        format: "int32"
+      company:
+        type: "string"
+      title:
+        type: "string"
+      email:
+        type: "string"
+      birthday:
+        type: "string"
+      phone:
+        type: "string"
+      ext:
+        type: "string"
+      fax:
+        type: "string"
+      status:
+        type: "boolean"
+        description: "Active / Inactive"
+        default: false
+      dataSrc:
+        type: "string"
+        description: ""
+      pwdExp:
+        type: "integer"
+        format: "int32"
+        description: "password expires"
+      pwdRem:
+        type: "string"
+        description: "password reminder"
+      roleId:
+        type: "string"
+  dataSource:
+    type: "object"
+    required:
+    - "def"
+    - "desc"
+    - "id"
+    - "status"
+    properties:
+      id:
+        type: "string"
+      def:
+        type: "string"
+      desc:
+        type: "string"
+      status:
+        type: "string"
+  role:
+    type: "object"
+    required:
+    - "desc"
+    - "id"
+    - "name"
+    - "permissions"
+    - "status"
+    properties:
+      id:
+        type: "string"
+      name:
+        type: "string"
+      desc:
+        type: "string"
+      status:
+        type: "string"
+      permissions:
+        type: "array"
+        items:
+          type: "object"
+          properties:
+            id:
+              type: "string"
+            name:
+              type: "string"
+            desc:
+              type: "string"
+          required:
+          - "desc"
+          - "id"
+          - "name"
+  SharedDocumentDeleteProperty:
+    type: "object"
+  TestFile:
+    type: "object"
+    properties:
+      fileId:
+        type: "string"
+      submitAt:
+        type: "integer"
+        format: "int32"
+      completeAt:
+        type: "integer"
+        format: "int32"
+      origName:
+        type: "string"
+      status:
+        type: "string"
+      canResubmit:
+        type: "boolean"
+        default: false
+      access:
+        type: "string"
+      email:
+        type: "string"
+      docLimit:
+        type: "integer"
+        format: "int32"
+        description: "0: stands for \"No Limit\""
+      docTypes:
+        type: "array"
+        items:
+          type: "string"
+      empGroups:
+        type: "array"
+        items:
+          type: "string"
+      errors:
+        type: "array"
+        items:
+          type: "string"
+      fileKeys:
+        type: "array"
+        items:
+          type: "string"
+      hardOutputs:
+        type: "array"
+        items:
+          $ref: "#/definitions/TestFileOutput"
+      outputs:
+        type: "array"
+        items:
+          $ref: "#/definitions/TestFileOutput"
+  TestFileOutput:
+    type: "object"
+    properties:
+      title:
+        type: "string"
+      link:
+        type: "string"
+        description: "download link"
+  TestFileSubmitPost:
+    type: "object"
+    properties:
+      file:
+        type: "string"
+        format: "byte"
+      keys:
+        type: "array"
+        items:
+          type: "string"
+      releaseOnly:
+        type: "string"
+      email:
+        type: "string"
+      numOfDoc:
+        type: "string"
+      groups:
+        type: "array"
+        items:
+          type: "string"
+      docTypes:
+        type: "array"
+        items:
+          type: "string"
+    description: "it's a form post enctype='multipart/form-data'"
+  UserProperty:
+    type: object
+    properties:
+      uid:
+        type: string
+      name:
+        type: string
+      lastLogon:
+        type: number
+      lastActivity:
+        type: number
+      company:
+        type: string
+      title:
+        type: string
+      email:
+        type: string
+      birthday:
+        type: string
+      phone:
+        type: string
+      ext:
+        type: string
+      fax:
+        type: string
+      status:
+        type: string
+      pwdExp:
+        type: string
+      pwdHint:
+        type: string
+      roleId:
+        type: string
+      dataSrcId:
+        type: string
+      online:
+        type: boolean
+      userType:
+        type: string
+      entries:
+        type: array
+        items:
+          type: object
+          properties:
+            roleId:
+              type: string
+            dataSrcId:
+              type: string
+  StandardResponse:
+    type: "object"
+    required:
+    - "data"
+    - "messages"
+    - "status"
+    - "statusCode"
+    properties:
+      status:
+        type: "string"
+      statusCode:
+        type: "number"
+        format: "double"
+      messages:
+        type: "array"
+        items:
+          type: "string"
+      data:
+        type: "array"
+        items:
+          type: "object"
+          properties: {}
+      total:
+        type: "integer"
+        format: "int32"
+      offset:
+        type: "integer"
+        format: "int32"
+      limit:
+        type: "integer"
+        format: "int32"
+  ErrorResponse:
+    type: "object"
+    required:
+    - "messages"
+    - "status"
+    - "statusCode"
+    properties:
+      status:
+        type: "string"
+      statusCode:
+        type: "number"
+        format: "double"
+      messages:
+        type: "array"
+        items:
+          type: "string"
+  SystemValuesResponse:
+    type: "object"
+    required:
+    - "data"
+    - "messages"
+    - "status"
+    - "statusCode"
+    properties:
+      status:
+        type: "string"
+      statusCode:
+        type: "number"
+        format: "double"
+      messages:
+        type: "array"
+        items:
+          type: "string"
+      data:
+        $ref: "#/definitions/SystemValues"
+  SystemValues:
+    type: "object"
+    properties:
+      claimType:
+        type: "array"
+        description: "[{id: 1, description: \"Test\"}, {id: 2, description: \"Test\
+          \ 2\"}]"
+        items:
+          type: "object"
+          properties: {}
+      recipientType:
+        type: "array"
+        description: "[{id: 1, description: \"Test\"}, {id: 2, description: \"Test\
+          \ 2\"}]"
+        items:
+          type: "object"
+          properties: {}
+      documentType:
+        type: "array"
+        description: "[{id: 1, description: \"Test\"}, {id: 2, description: \"Test\
+          \ 2\"}]"
+        items:
+          type: "object"
+          properties: {}
+      insertType:
+        type: "array"
+        description: "[{id: 1, description: \"Test\"}, {id: 2, description: \"Test\
+          \ 2\"}]"
+        items:
+          type: "object"
+          properties: {}
+      extraInsertsForm:
+        type: "array"
+        description: "[{id: 1, description: \"Test\"}, {id: 2, description: \"Test\
+          \ 2\"}]"
+        items:
+          type: "object"
+          properties: {}
+  Messages:
+    type: "object"
+    required:
+    - "endDate"
+    - "id"
+    - "startDate"
+    properties:
+      id:
+        type: "integer"
+        format: "int32"
+        description: "Unique ID for the message"
+      title:
+        type: "string"
+        description: "Subject of the message"
+      startDate:
+        type: "string"
+        format: "date"
+        description: "Message start date"
+      endDate:
+        type: "string"
+        format: "date"
+        description: "Message Expiration date"
+      userType:
+        type: "string"
+        description: "Internal, External, All. Default all"
+      message:
+        type: "string"
+        description: "Actual Message"
+  MessageResponse:
+    type: "object"
+    required:
+    - "messages"
+    - "status"
+    - "statusCode"
+    properties:
+      status:
+        type: "string"
+      statusCode:
+        type: "number"
+        format: "double"
+      messages:
+        type: "array"
+        items:
+          type: "string"
+      data:
+        type: "array"
+        items:
+          $ref: "#/definitions/Messages"
