@@ -1,7 +1,7 @@
 ---
 swagger: "2.0"
 info:
-  description: "No description"
+  description: "CHPS Description"
   version: "0.0.1"
   title: "CHPS API contract online"
   contact: {}
